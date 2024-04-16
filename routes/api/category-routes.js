@@ -26,14 +26,37 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   // create a new category
+  Category.create(req.body)
+  .then(category => res.status(201).json(category))
+  .catch(error => res.status(500).json(error));
 });
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
+  Category.findByPk(req.params.id)
+  .then(category => {
+    if (!category) {
+      res.status(404).json({ message: 'Category not found' });
+      return;
+    }
+    return category.update(req.body);
+  })
+  .then(category => res.json(category))
+  .catch(error => res.status(500).json(error));
 });
 
 router.delete('/:id', (req, res) => {
   // delete a category by its `id` value
+  Category.findByPk(req.params.id)
+    .then(category => {
+      if (!category) {
+        res.status(404).json({ message: 'Category not found' });
+        return;
+      }
+      return category.destroy();
+    })
+    .then(() => res.json({ message: 'Category deleted successfully' }))
+    .catch(error => res.status(500).json(error));
 });
 
 module.exports = router;
