@@ -19,10 +19,30 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
+  Tag.findByPk(req.params.id, {
+    include: [{ model: Product, through: ProductTag }]
+  })
+  .then(tag => {
+    if (!tag) {
+      res.status(404).json({ message: 'Tag not found' });
+      return;
+    }
+    res.json(tag);
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json(err);
+  });
 });
 
 router.post('/', (req, res) => {
   // create a new tag
+  Tag.create(req.body)
+  .then(tag => res.status(200).json(tag))
+  .catch(err => {
+    console.error(err);
+    res.status(400).json(err);
+  });
 });
 
 router.put('/:id', (req, res) => {
