@@ -47,10 +47,36 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
+  Tag.update(req.body, {
+    where: { id: req.params.id }
+  })
+  .then(affectedRows => {
+    if (affectedRows > 0) {
+      res.json({ message: 'Tag updated successfully' });
+    } else {
+      res.status(404).json({ message: 'Tag not found' });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(400).json(err);
+  });
 });
 
 router.delete('/:id', (req, res) => {
   // delete on tag by its `id` value
+  Tag.destroy({ where: { id: req.params.id } })
+  .then(affectedRows => {
+    if (affectedRows > 0) {
+      res.json({ message: 'Tag deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Tag not found' });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json(err);
+  });
 });
 
 module.exports = router;
